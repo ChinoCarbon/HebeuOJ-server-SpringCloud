@@ -81,6 +81,7 @@ public class ProblemsController
             return stringBuilder.toString();
         } catch (Exception e)
         {
+            e.printStackTrace();
             return null;
         }
     }
