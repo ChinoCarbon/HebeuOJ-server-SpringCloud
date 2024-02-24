@@ -5,6 +5,7 @@ import com.chinocarbon.problems.enums.AccountStatus;
 import com.chinocarbon.problems.pojo.Problem;
 import com.chinocarbon.problems.pojo.SinglePage;
 import com.chinocarbon.problems.service.ProblemService;
+import com.chinocarbon.problems.utils.Result;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,6 +24,7 @@ import java.util.UUID;
 
 @RestController
 @CrossOrigin
+@RequestMapping("problem")
 public class ProblemsController
 {
     private ProblemService problemService;
@@ -63,7 +65,7 @@ public class ProblemsController
         }
     }
 
-    @GetMapping("/problemsH/{id}")
+    @GetMapping("/problemContent/{id}")
     public String getProblemContent(@PathVariable int id, HttpServletRequest request) throws IOException
     {
         try
@@ -102,15 +104,15 @@ public class ProblemsController
     }
 
     @PostMapping("/findAllByPages")
-    public PageInfo<Problem> getAllProblems(@RequestBody SinglePage singlePage)
+    public Result getAllProblems(@RequestBody SinglePage singlePage)
     {
-        return problemService.findAllByPages(singlePage);
+        return Result.succeed().Data("listInformation", problemService.findAllByPages(singlePage));
     }
 
     @PostMapping("/findLikeByPages")
-    public PageInfo<Problem> getSomeProblems(@RequestBody SinglePage singlePage)
+    public Result getSomeProblems(@RequestBody SinglePage singlePage)
     {
-        return problemService.findSomeByKeyWord(singlePage);
+        return Result.succeed().Data("listInformation", problemService.findSomeByKeyWord(singlePage));
     }
 
     @PostMapping("/getProblemInformation")
