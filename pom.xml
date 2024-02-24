@@ -17,6 +17,7 @@
 
     <modules>
         <module>module_problems</module>
+        <module>module_account</module>
     </modules>
 
     <properties>
