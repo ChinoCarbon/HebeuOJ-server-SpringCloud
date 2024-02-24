@@ -66,7 +66,7 @@ public class ProblemsController
     }
 
     @GetMapping("/problemContent/{id}")
-    public String getProblemContent(@PathVariable int id, HttpServletRequest request) throws IOException
+    public Result getProblemContent(@PathVariable int id, HttpServletRequest request) throws IOException
     {
         try
         {
@@ -80,7 +80,7 @@ public class ProblemsController
                 stringBuilder.append(buf, 0, len);
             }
             System.out.println(stringBuilder);
-            return stringBuilder.toString();
+            return Result.succeed().Data("content", stringBuilder.toString());
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -116,17 +116,17 @@ public class ProblemsController
     }
 
     @PostMapping("/getProblemInformation")
-    public Problem getProblemInformation(@RequestBody Problem problem)
+    public Result getProblemInformation(@RequestBody Problem problem)
     {
         System.out.println(problem);
         //return problemDao.getProblemInformation(problem);
-        return problemDao.selectById(problem.getProblemId());
+        return Result.succeed().Data("information", problemDao.selectById(problem.getProblemId()));
     }
 
     @PostMapping("/uploadInOut")
     public String uploadInOut(@RequestParam String problemId, MultipartFile file, HttpServletRequest request) throws IOException
     {
-        String uploadPath = request.getServletContext().getRealPath("/problems/" + problemId + "/data");
+        String uploadPath = request.getServletContext().getRealPath( File.separator + "problems" + File.separator + problemId + File.separator + "data");
 
         File saveFile = new File(uploadPath);
         if(!saveFile.exists()) {
@@ -144,7 +144,7 @@ public class ProblemsController
         String dateTime = String.valueOf(LocalDateTime.now());
         String uuid = UUID.randomUUID().toString();
         String saveName = file.getOriginalFilename();
-        String savePathName = uploadPath + "/" + saveName;
+        String savePathName = uploadPath + File.separator + saveName;
         File result = new File(savePathName);
         file.transferTo(result);
         return AccountStatus.SUCCESS.toString();
@@ -153,7 +153,7 @@ public class ProblemsController
     @PostMapping("/uploadImage")
     public String uploadImage(MultipartFile file, HttpServletRequest request) throws IOException
     {
-        String uploadPath = request.getServletContext().getRealPath("/img");
+        String uploadPath = request.getServletContext().getRealPath( File.separator + "img");
         File saveFile = new File(uploadPath);
         if(!saveFile.exists()) {
             saveFile.mkdir();
@@ -161,10 +161,10 @@ public class ProblemsController
         String dateTime = String.valueOf(LocalDateTime.now());
         String uuid = UUID.randomUUID().toString();
         String saveName = dateTime + "-" + uuid + "-" + file.getOriginalFilename();
-        String savePathName = uploadPath + "/" + saveName;
+        String savePathName = uploadPath + File.separator + saveName;
         File result = new File(savePathName);
         file.transferTo(result);
-        return request.getServletContext().getContextPath() + "/img/" + saveName;
+        return request.getServletContext().getContextPath() + File.separator + "img" + File.separator + saveName;
     }
 
     @GetMapping("isPass")
