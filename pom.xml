@@ -18,6 +18,7 @@
     <modules>
         <module>module_problems</module>
         <module>module_account</module>
+        <module>module_judgement</module>
     </modules>
 
     <properties>
