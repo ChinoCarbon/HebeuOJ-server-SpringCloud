@@ -20,6 +20,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author ChinoCarbon
@@ -49,41 +50,44 @@ public class JudgeServiceImpl implements JudgeService
     }
 
     @Override
-    public Result judge(Judgement judgement, String absoluteConfigFilePath,
-                        String absoluteFilePath, String absoluteJudgementPath, String absoluteCompileMachinePath,
-                        String absoluteJudgeMachinePath) throws IOException
+    public Result judge(Judgement judgement, Map<String, String> judgeInfo) throws IOException
     {
 
-        System.out.println(absoluteCompileMachinePath);
-        System.out.println(absoluteJudgeMachinePath);
-
-        File file = new File(absoluteJudgementPath + File.separator + judgement.getJudgementId());
-        System.out.println(absoluteJudgementPath + File.separator + judgement.getJudgementId());
+        File file = new File( judgeInfo.get("absoluteJudgementPath") + File.separator + judgement.getJudgementId());
+        System.out.println(judgeInfo.get("absoluteJudgementPath") + File.separator + judgement.getJudgementId());
         System.out.println(file.mkdir());
 
         String fileBack = LanguageType.getType(judgement.getLanguageType()).toString().toLowerCase(Locale.ROOT);
-        FileWriter fileWriter = new FileWriter(absoluteJudgementPath + File.separator + judgement.getJudgementId() + File.separator + "Main." + fileBack);
+        FileWriter fileWriter = new FileWriter(judgeInfo.get("absoluteJudgementPath") + File.separator + judgement.getJudgementId() + File.separator + "Main." + fileBack);
         fileWriter.write(judgement.getCode());
         fileWriter.close();
 
         Result result = new Result(judgement);
 
-        CoreCompile coreCompile = new CoreCompile(LanguageType.getType(judgement.getLanguageType()),
-                absoluteFilePath + File.separator + judgement.getProblemId(),
-                absoluteJudgementPath + File.separator + judgement.getJudgementId(),
-                absoluteCompileMachinePath);
+        CoreCompile coreCompile = new CoreCompile(
+                LanguageType.getType(judgement.getLanguageType()),
+                judgeInfo.get("absoluteFilePath") + File.separator + judgement.getProblemId(),
+                judgeInfo.get("absoluteJudgementPath") + File.separator + judgement.getJudgementId(),
+                judgeInfo.get("absoluteCompileMachinePath")
+        );
 
         coreCompile.compile(result);
         problemDao.addOne(judgement.getProblemId());
         userDao.addOne(judgement.getUserId());
         if(result.isCE())
         {
-            MySerializeUtil.mySerialize(result, absoluteJudgementPath + File.separator + judgement.getJudgementId() + File.separator + "result.txt");
+            MySerializeUtil.mySerialize(result, judgeInfo.get("absoluteJudgementPath") + File.separator + judgement.getJudgementId() + File.separator + "result.txt");
             System.out.println("序列化原始对象完成！OK！");
             return result;
         }
-        CoreJudge coreJudge = new CoreJudge(LanguageType.getType(judgement.getLanguageType()), absoluteFilePath,
-                absoluteJudgeMachinePath, absoluteConfigFilePath, 2000, 128, judgement.getProblemId(), judgement.getJudgementId());
+        CoreJudge coreJudge = new CoreJudge(
+                LanguageType.getType(judgement.getLanguageType()),
+                judgeInfo,
+                2000,
+                128,
+                judgement.getProblemId(),
+                judgement.getJudgementId()
+        );
         coreJudge.judge(result);
         List<PointMessage> list = result.getMessages();
         boolean f = false;
@@ -101,7 +105,7 @@ public class JudgeServiceImpl implements JudgeService
             userDao.addPassOne(judgement.getUserId());
             problemDao.addAPass(judgement.getUserId(), judgement.getProblemId());
         }
-        MySerializeUtil.mySerialize(result, absoluteJudgementPath + File.separator + judgement.getJudgementId() + File.separator + "result.txt");
+        MySerializeUtil.mySerialize(result, judgeInfo.get("absoluteJudgementPath") + File.separator + judgement.getJudgementId() + File.separator + "result.txt");
         System.out.println("序列化原始对象完成！OK！");
         return result;
     }

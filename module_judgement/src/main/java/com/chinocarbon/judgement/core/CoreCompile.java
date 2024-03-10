@@ -1,8 +1,11 @@
 package com.chinocarbon.judgement.core;
 
+import com.chinocarbon.judgement.enums.PointStatement;
+import com.chinocarbon.judgement.pojo.PointMessage;
 import com.chinocarbon.judgement.pojo.Result;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -72,8 +75,8 @@ public class CoreCompile
 
     private void compileJava(Result result) throws IOException
     {
-        ProcessBuilder processBuilder = new ProcessBuilder("sh", "-c",
-                absoluteCompileMachinePath + "/CompileJava.sh " + absoluteJudgementFilePath);
+        ProcessBuilder processBuilder = new ProcessBuilder("python",
+                absoluteCompileMachinePath + File.separator + "CompileJava.py", absoluteJudgementFilePath);
         processBuilder.redirectErrorStream(true);
         Process process = processBuilder.start();
         compileCore(process, result);

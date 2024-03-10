@@ -4,6 +4,7 @@ import com.chinocarbon.judgement.pojo.Judgement;
 import com.chinocarbon.judgement.pojo.Result;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author ChinoCarbon
@@ -11,8 +12,7 @@ import java.io.IOException;
  */
 public interface JudgeService
 {
-    Result judge(Judgement judgement, String absoluteConfigFilePath, String absoluteFilePath,
-                 String absoluteJudgementPath, String absoluteCompileMachinePath, String absoluteJudgeMachinePath) throws IOException;
+    Result judge(Judgement judgement, Map<String, String> judgeInfo) throws IOException;
 
     int getJudgementId(Judgement judgement);
 }

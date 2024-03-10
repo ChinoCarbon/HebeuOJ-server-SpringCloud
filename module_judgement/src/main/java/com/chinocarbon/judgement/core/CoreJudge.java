@@ -6,8 +6,10 @@ import com.chinocarbon.judgement.pojo.PointMessage;
 import com.chinocarbon.judgement.pojo.Result;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 /**
  * @author ChinoCarbon
@@ -16,26 +18,21 @@ import java.io.InputStreamReader;
 public class CoreJudge
 {
     private LanguageType languageType;
-    private String absoluteSourceFilePath;
-    private String absoluteConfigFilePath;
-    private String absoluteJudgeMachinePath;
     private  int maxTime;
     private int maxMemory;
     private int problemNum;
-
     private int judgementId;
+    private Map<String, String> judgeInfo;
 
-    public CoreJudge(LanguageType languageType, String absoluteSourceFilePath, String absoluteJudgeMachinePath, String absoluteConfigFilePath,
+    public CoreJudge(LanguageType languageType, Map<String, String> judgeInfo,
                      int maxTime, int maxMemory, int problemNum, int judgementId)
     {
         this.languageType = languageType;
-        this.absoluteSourceFilePath = absoluteSourceFilePath;
-        this.absoluteConfigFilePath = absoluteConfigFilePath;
-        this.absoluteJudgeMachinePath = absoluteJudgeMachinePath;
         this.maxTime = maxTime;
         this.maxMemory = maxMemory;
         this.problemNum = problemNum;
         this.judgementId = judgementId;
+        this.judgeInfo = judgeInfo;
     }
 
     private void coreJudge(Result result, ProcessBuilder processBuilder) throws IOException
@@ -60,28 +57,33 @@ public class CoreJudge
     private void judgeJava(Result result) throws IOException
     {
         System.out.println("start judge");
-        ProcessBuilder processBuilder = new ProcessBuilder
-                ("python", absoluteJudgeMachinePath + "/JudgeJava.py",
-                        String.valueOf(maxTime), String.valueOf(problemNum), String.valueOf(judgementId), absoluteConfigFilePath);
+        ProcessBuilder processBuilder = new ProcessBuilder(
+                "python",
+                judgeInfo.get("absoluteJudgeMachinePath") + File.separator + "JudgeJava.py",
+                String.valueOf(maxTime), String.valueOf(problemNum), String.valueOf(judgementId),
+                judgeInfo.get("absoluteFilePath"),
+                judgeInfo.get("absoluteJudgementPath")
+        );
         coreJudge(result, processBuilder);
     }
 
     private void judgeC(Result result) throws IOException
     {
-        System.out.println("start judge");
-        ProcessBuilder processBuilder = new ProcessBuilder
-                ("sh", "-c", absoluteJudgeMachinePath + "/JudgeC.sh "
-                                + maxTime + " " + problemNum + " " + judgementId + " " +absoluteConfigFilePath);
-        coreJudge(result, processBuilder);
+//        System.out.println("start judge");
+//        ProcessBuilder processBuilder = new ProcessBuilder(
+//                "sh", "-c", absoluteJudgeMachinePath + File.separator + "JudgeC.sh "
+//                                + maxTime + " " + problemNum + " " + judgementId + " " + absoluteConfigFilePath
+//        );
+//        coreJudge(result, processBuilder);
     }
 
     private void judgeCPP(Result result) throws IOException
     {
-        System.out.println("start judge");
-        ProcessBuilder processBuilder = new ProcessBuilder
-                ("python", absoluteJudgeMachinePath + "/JudgeCPP.py",
-                                 String.valueOf(maxTime), String.valueOf(problemNum), String.valueOf(judgementId), absoluteConfigFilePath);
-        coreJudge(result, processBuilder);
+//        System.out.println("start judge");
+//        ProcessBuilder processBuilder = new ProcessBuilder
+//                ("python", absoluteJudgeMachinePath + File.separator + "JudgeCPP.py",
+//                                 String.valueOf(maxTime), String.valueOf(problemNum), String.valueOf(judgementId), absoluteConfigFilePath);
+//        coreJudge(result, processBuilder);
     }
 
     public void judge(Result result) throws IOException

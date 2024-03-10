@@ -13,11 +13,15 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 @WebListener
 public class MyServletContextListener implements ServletContextListener, HttpSessionListener, HttpSessionAttributeListener
 {
+
+    Map<String, String> judgeInfo = new HashMap<>();
 
     public MyServletContextListener()
     {
@@ -41,8 +45,9 @@ public class MyServletContextListener implements ServletContextListener, HttpSes
 
         // 假设 properties 是已经加载好的 Properties 对象
         for (String key : properties.stringPropertyNames()) {
-            sce.getServletContext().setAttribute(key, properties.get(key));
+            judgeInfo.put(key, (String) properties.get(key));
         }
+        sce.getServletContext().setAttribute("judgeInfo", judgeInfo);
     }
 
     @Override

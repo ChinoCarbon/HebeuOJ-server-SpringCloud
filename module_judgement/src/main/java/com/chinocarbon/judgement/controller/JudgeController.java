@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author ChinoCarbon
@@ -38,7 +39,7 @@ public class JudgeController {
     }
 
     @RequestMapping("judgement")
-    public Result readyToJudge(@RequestBody Judgement submitMessage, HttpServletResponse response, HttpServletRequest request) throws IOException, ClassNotFoundException {
+    public Result readyToJudge(@RequestBody Judgement submitMessage, HttpServletRequest request) throws IOException, ClassNotFoundException {
 //        if (new File(request.getServletContext().getRealPath(File.separator + "judgements" + File.separator + id + File.separator + "result.txt")).isFile()) {
 //            Object obj = MySerializeUtil.myDeserialize(request.getServletContext().getRealPath(File.separator + "judgements" + File.separator + id + File.separator + "result.txt"));
 //            if (obj instanceof Result) {
@@ -47,15 +48,11 @@ public class JudgeController {
 //                return result;
 //            }
 //        }
+        Map<String, String> judgeInfo = (Map<String, String>) request.getServletContext().getAttribute("judgeInfo");
       //  Judgement submitMessage = (Judgement) request.getSession().getAttribute("judgement");
         if (LanguageType.getType(submitMessage.getLanguageType()) == null) return null;
    //     if (id == submitMessage.getJudgementId()) {
-            return judgeService.judge(submitMessage,
-                    (String) request.getServletContext().getAttribute("absoluteConfigFilePath"),
-                    (String) request.getServletContext().getAttribute("absoluteFilePath"),
-                    (String) request.getServletContext().getAttribute("absoluteJudgementPath"),
-                    (String) request.getServletContext().getAttribute("absoluteCompileMachinePath"),
-                    (String) request.getServletContext().getAttribute("absoluteJudgeMachinePath"));
+            return judgeService.judge(submitMessage, judgeInfo);
    //     } else return null;
     }
 
