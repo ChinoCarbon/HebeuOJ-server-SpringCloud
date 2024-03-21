@@ -1,6 +1,7 @@
 package com.chinocarbon.judgement.pojo;
 
 import com.chinocarbon.judgement.enums.PointStatement;
+import lombok.Getter;
 
 import java.io.Serializable;
 
@@ -8,22 +9,15 @@ import java.io.Serializable;
  * @author ChinoCarbon
  * @since 2022/4/29-8:18 PM
  */
+
+@Getter
 public class PointMessage implements Serializable
 {
     private int id;
     private final PointStatement statement;
     private final long timeConsumed;
     private final long memoryConsumed;
-
-    public int getId()
-    {
-        return id;
-    }
-
-    public void setId(int id)
-    {
-        this.id = id;
-    }
+    private final String errorMessage;
 
     @Override
     public String toString()
@@ -36,27 +30,13 @@ public class PointMessage implements Serializable
                 '}';
     }
 
-    public PointMessage(int id, PointStatement statement, long timeConsumed, long memoryConsumed)
+    public PointMessage(int id, PointStatement statement, long timeConsumed, long memoryConsumed, String errorMessage)
     {
         this.id = id;
+        this.errorMessage = errorMessage;
         this.statement = statement;
         this.timeConsumed = timeConsumed;
         this.memoryConsumed = memoryConsumed;
-    }
-
-    public PointStatement getStatement()
-    {
-        return statement;
-    }
-
-    public long getTimeConsumed()
-    {
-        return timeConsumed;
-    }
-
-    public long getMemoryConsumed()
-    {
-        return memoryConsumed;
     }
 
 }

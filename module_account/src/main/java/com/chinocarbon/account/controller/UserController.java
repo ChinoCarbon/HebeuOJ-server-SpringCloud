@@ -8,11 +8,9 @@ import com.chinocarbon.account.pojo.User;
 import com.chinocarbon.account.Utils.EncodeUtils;
 import com.chinocarbon.account.dao.UserDao;
 import com.chinocarbon.account.pojo.Classes;
+import com.chinocarbon.account.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -30,10 +28,12 @@ import java.util.Objects;
  * @author ChinoCarbon
  * @since 2022/5/11-9:22 AM
  */
+@CrossOrigin
 @RestController
 public class UserController
 {
     UserDao userDao;
+    AuthService authService;
 
     @Autowired
     public void setUserDao(UserDao userDao)
@@ -41,58 +41,9 @@ public class UserController
         this.userDao = userDao;
     }
 
-    @RequestMapping("/checkCookie")
-    public String selectUsernameByCookie(HttpServletRequest request, HttpServletResponse response) throws IOException
-    {
-        Cookie[] cookies = request.getCookies();
-
-        if(cookies == null)
-        {
-            System.out.println("未找到Cookie");
-            return "Cookie Not Found";
-        }
-
-        String token = null;
-        for(Cookie cookie: cookies)
-        {
-            if ("loginToken".equals(cookie.getName()))
-            {
-                token = EncodeUtils.decode(cookie.getValue());
-                break;
-            }
-        }
-
-        if(token == null)
-        {
-            System.out.println("未找到cookie");
-            return "Cookie Not Found";
-        }
-        System.out.println("token=" + token);
-
-        String[] tokenInfo = token.split("&");
-        try
-        {
-            User user = userDao.selectUserById(Integer.parseInt(tokenInfo[0]));
-            System.out.println(user);
-            System.out.println(tokenInfo[0]);
-            System.out.println(Duration.between(LocalDateTime.parse(tokenInfo[1]),
-                    LocalDateTime.now(ZoneId.of("Asia/Shanghai"))).toMinutes());
-            if (user != null &&
-                    Duration.between(LocalDateTime.parse(tokenInfo[1]),
-                            LocalDateTime.now(ZoneId.of("Asia/Shanghai"))).toMinutes() < 120)
-            {
-                response.setContentType("application/json");
-                response.setCharacterEncoding("utf-8");
-                response.getWriter().write(JSONObject.toJSONString(user));
-                return null;
-            }
-            System.out.println("token过期 不合法");
-            return "Cookie Not Found";
-        } catch (Exception e)
-        {
-            System.out.println("出错");
-            return "Cookie Not Found";
-        }
+    @Autowired
+    public void setAuthService(AuthService authService) {
+        this.authService = authService;
     }
 
     @RequestMapping("/getIco")

@@ -34,6 +34,7 @@ public class CoreCompile
     {
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         StringBuilder errorMessage = new StringBuilder(reader.readLine());
+        System.out.println(errorMessage);
         if("compile done".equals(errorMessage.toString()))
         {
             result.setCE(false);
@@ -57,8 +58,11 @@ public class CoreCompile
 
     private void compileC(Result result) throws IOException
     {
-        ProcessBuilder processBuilder = new ProcessBuilder("sh", "-c",
-                 absoluteCompileMachinePath + "/CompileC.sh " + absoluteJudgementFilePath);
+        ProcessBuilder processBuilder = new ProcessBuilder(
+                "python",
+                absoluteCompileMachinePath + File.separator +"CompileC.py",
+                absoluteJudgementFilePath
+        );
         processBuilder.redirectErrorStream(true);
         Process process = processBuilder.start();
         compileCore(process, result);
@@ -66,8 +70,11 @@ public class CoreCompile
 
     private void compileCPP(Result result) throws IOException
     {
-        ProcessBuilder processBuilder = new ProcessBuilder("sh", "-c",
-                absoluteCompileMachinePath + "/CompileCpp.sh " + absoluteJudgementFilePath);
+        ProcessBuilder processBuilder = new ProcessBuilder(
+                "python",
+                absoluteCompileMachinePath + File.separator +"CompileCpp.py",
+                absoluteJudgementFilePath
+        );
         processBuilder.redirectErrorStream(true);
         Process process = processBuilder.start();
         compileCore(process, result);
@@ -75,8 +82,23 @@ public class CoreCompile
 
     private void compileJava(Result result) throws IOException
     {
-        ProcessBuilder processBuilder = new ProcessBuilder("python",
-                absoluteCompileMachinePath + File.separator + "CompileJava.py", absoluteJudgementFilePath);
+        ProcessBuilder processBuilder = new ProcessBuilder(
+                "python",
+                absoluteCompileMachinePath + File.separator + "CompileJava.py",
+                absoluteJudgementFilePath
+        );
+        processBuilder.redirectErrorStream(true);
+        Process process = processBuilder.start();
+        compileCore(process, result);
+    }
+
+    private void compilePython(Result result) throws IOException
+    {
+        ProcessBuilder processBuilder = new ProcessBuilder(
+                "python",
+                absoluteCompileMachinePath + File.separator + "CompilePython.py",
+                absoluteJudgementFilePath
+        );
         processBuilder.redirectErrorStream(true);
         Process process = processBuilder.start();
         compileCore(process, result);
@@ -89,6 +111,7 @@ public class CoreCompile
             case C -> compileC(result);
             case CPP -> compileCPP(result);
             case Java -> compileJava(result);
+            case Py -> compilePython(result);
         }
     }
 }

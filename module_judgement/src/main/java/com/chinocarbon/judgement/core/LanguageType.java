@@ -8,7 +8,9 @@ public enum LanguageType
 {
     C(1),
     CPP(2),
-    Java(3);
+    Java(3),
+
+    Py(4);
 
     private final int type;
 
@@ -22,6 +24,7 @@ public enum LanguageType
         if(type == 1) return C;
         if(type == 2) return CPP;
         if(type == 3) return Java;
+        if(type == 4) return Py;
         return null;
     }
 }

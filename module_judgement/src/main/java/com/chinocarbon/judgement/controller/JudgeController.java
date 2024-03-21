@@ -21,6 +21,7 @@ import java.util.Map;
  * @since 2022/5/8-7:37 PM
  */
 @RestController
+@CrossOrigin
 @RequestMapping("judge")
 public class JudgeController {
     private JudgeService judgeService;
@@ -38,9 +39,10 @@ public class JudgeController {
         return p;
     }
 
-    @RequestMapping("judgement")
+    @PostMapping("judgement")
     public Result readyToJudge(@RequestBody Judgement submitMessage, HttpServletRequest request) throws IOException, ClassNotFoundException {
-//        if (new File(request.getServletContext().getRealPath(File.separator + "judgements" + File.separator + id + File.separator + "result.txt")).isFile()) {
+            submitMessage.setJudgementId(Integer.parseInt(request.getParameter("id")));
+        //        if (new File(request.getServletContext().getRealPath(File.separator + "judgements" + File.separator + id + File.separator + "result.txt")).isFile()) {
 //            Object obj = MySerializeUtil.myDeserialize(request.getServletContext().getRealPath(File.separator + "judgements" + File.separator + id + File.separator + "result.txt"));
 //            if (obj instanceof Result) {
 //                Result result = (Result) obj;

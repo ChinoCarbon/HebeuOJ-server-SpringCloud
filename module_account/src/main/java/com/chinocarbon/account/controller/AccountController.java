@@ -1,6 +1,7 @@
 package com.chinocarbon.account.controller;
 
 import com.chinocarbon.account.Utils.*;
+import com.chinocarbon.account.dao.UserDao;
 import com.chinocarbon.account.enums.AccountStatus;
 import com.chinocarbon.account.service.AccountService;
 import com.chinocarbon.account.Utils.EncodeUtils;
@@ -35,6 +36,8 @@ public class AccountController {
 
     private AuthService authService;
 
+    private UserDao userDao;
+
     @Autowired
     public void setLogInService(AccountService accountService) {
         this.accountService = accountService;
@@ -43,6 +46,11 @@ public class AccountController {
     @Autowired
     public void setAuthService(AuthService authService) {
         this.authService = authService;
+    }
+
+    @Autowired
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
     }
 
     @RequestMapping("/checkLogIn")
@@ -55,7 +63,7 @@ public class AccountController {
 //        }
         AccountStatus accountStatus = accountService.checkLogIn(user);
         if (accountStatus == AccountStatus.SUCCESS) {
-            return Result.succeed().message(authService.createToken(String.valueOf(user.getUserId())));
+            return Result.succeed().message(authService.createToken(String.valueOf(user.getUserId()))).Data("user", userDao.selectUserByUserName(user.getUserName()));
         }
         return Result.error().message(accountStatus.getMessage());
     }
@@ -70,5 +78,23 @@ public class AccountController {
         if (accountStatus != AccountStatus.SUCCESS) {
             return Result.error().message(accountStatus.getMessage());
         } else return Result.succeed().message(accountStatus.getMessage());
+    }
+
+    @RequestMapping("/checkToken")
+    public void selectUsernameByCookie(HttpServletRequest request, HttpServletResponse response) throws IOException
+    {
+        try {
+            String id = authService.getUserIdFromToken(request.getHeader("token"));
+            if(!id.equals(request.getHeader("userId"))) {
+                System.out.println(id + " " + request.getHeader("userId"));
+                throw new SignatureException("用户id校检失败");
+            }
+        } catch (SignatureException | IllegalArgumentException e) {
+            e.printStackTrace();
+            response.sendError(401, "非法token");
+        } catch (ExpiredJwtException e) {
+            e.printStackTrace();
+            response.sendError(401, "token过期");
+        }
     }
 }
